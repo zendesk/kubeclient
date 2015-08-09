@@ -35,8 +35,8 @@ module Kubeclient
           entity_name_plural = pluralize_entity(entity_name)
 
           # get all entities of a type e.g. get_nodes, get_pods, etc.
-          define_method("get_#{entity_name_plural}") do |options = {}|
-            get_entities(entity_type, klass, options)
+          define_method("get_#{entity_name_plural}") do |namespace:nil, options:{}|
+            get_entities(entity_type, klass, namespace, options)
           end
 
           # watch all entities of a type e.g. watch_nodes, watch_pods, etc.
@@ -114,15 +114,15 @@ module Kubeclient
         WatchStream.new(uri, options)
       end
 
-      def get_entities(entity_type, klass, options)
+      def get_entities(entity_type, klass, namespace = nil, options = {})
         params = {}
         if options[:label_selector]
           params['params'] = { labelSelector: options[:label_selector] }
         end
 
-        # TODO: namespace support?
+        ns_prefix = build_namespace_prefix(namespace)
         response = handle_exception do
-          rest_client[resource_name(entity_type)]
+          rest_client[ns_prefix + resource_name(entity_type)]
           .get(params.merge(@headers))
         end
 

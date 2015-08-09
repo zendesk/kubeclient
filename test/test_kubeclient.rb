@@ -259,7 +259,7 @@ class KubeClientTest < MiniTest::Test
                                       bearer_token: 'valid_token'
                                     }
 
-    pods = client.get_pods(label_selector: 'name=redis-master')
+    pods = client.get_pods(options: { label_selector: 'name=redis-master' })
 
     assert_equal('Pod', pods.kind)
     assert_equal(1, pods.size)

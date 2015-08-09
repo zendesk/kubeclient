@@ -23,13 +23,14 @@ class TestNamespace < MiniTest::Test
 
   def test_delete_namespace_v1beta3
     our_namespace = Kubeclient::Namespace.new
-    our_namespace.name = 'staging'
+    our_namespace.metadata = {}
+    our_namespace.metadata.name = 'staging'
 
     stub_request(:delete, %r{/namespaces})
       .to_return(status: 200)
 
     client = Kubeclient::Client.new 'http://localhost:8080/api/', 'v1beta3'
-    client.delete_namespace our_namespace.name
+    client.delete_namespace our_namespace.metadata.name
 
     assert_requested(:delete,
                      'http://localhost:8080/api/v1beta3/namespaces/staging',
