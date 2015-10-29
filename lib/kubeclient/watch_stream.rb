@@ -26,6 +26,7 @@ module Kubeclient
             buffer << chunk
             while (line = buffer.slice!(/.+\n/))
               yield @format == :json ? WatchNotice.new(JSON.parse(line)) : line.chomp
+              return if @finished
             end
           end
         end
